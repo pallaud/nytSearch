@@ -2,14 +2,11 @@ package com.pallaud.nytimessearch;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +14,8 @@ import com.pallaud.nytimessearch.activities.ArticleActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+//import com.pallaud.nytimessearch.extra.ImageView;
 
 /**
  * Created by pallaud on 6/20/16.
@@ -30,19 +29,13 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         articlesList = articles;
     }
 
-    // Provide a direct reference to each of the views within a data item
-    // Used to cache the views within the item layout for fast access
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        // Your holder should contain a member variable
-        // for any view that will be set as you render a row
+
         public TextView tvTitle;
         public ImageView ivImage;
 
-        // We also create a constructor that accepts the entire item row
-        // and does the view lookups to find each subview
         public ViewHolder(View itemView) {
-            // Stores the itemView in a public final member variable that can be used
-            // to access the context from any ViewHolder instance.
+
             super(itemView);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
             ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
@@ -58,6 +51,16 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
             i.putExtra("article",article);
             view.getContext().startActivity(i);
         }
+
+//        @Override
+//        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//            // Calculate the image ratio of the loaded bitmap
+//            float ratio = (float) bitmap.getHeight() / (float) bitmap.getWidth();
+//            // Set the ratio for the image
+//            ivImage.setHeightRatio(ratio);
+//            // Load the image into the view
+//            ivImage.setImageBitmap(bitmap);
+//        }
     }
 
     // Usually involves inflating a layout from XML and returning the holder
@@ -97,6 +100,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
     public int getItemCount() {
         return articlesList.size();
     }
+
 
 //    @Override
 //    public View getView(int position, View convertView, ViewGroup parent) {
