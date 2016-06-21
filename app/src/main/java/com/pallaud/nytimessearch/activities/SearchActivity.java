@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +37,7 @@ import cz.msebera.android.httpclient.Header;
 public class SearchActivity extends AppCompatActivity {
 
     EditText etQuery;
-    GridView gvResults;
+    RecyclerView gvResults;
     Button btnSearch;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
@@ -51,24 +54,25 @@ public class SearchActivity extends AppCompatActivity {
 
     public void setUpViews() {
         etQuery = (EditText) findViewById(R.id.etQuery);
-        gvResults = (GridView) findViewById(R.id.gvResults);
+        gvResults = (RecyclerView) findViewById(R.id.gvResults);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<Article>();
         adapter = new ArticleArrayAdapter(this,articles);
         gvResults.setAdapter(adapter);
 
-        // Set up click listener for clicking on articles
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Create intent to display article details
-                // pass in different context b/c anonymous class
-                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                Article article = articles.get(position);
-                i.putExtra("article",article);
-                startActivity(i);
-            }
-        });
+//        // Set up click listener for clicking on articles
+//        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                // Create intent to display article details
+//                // pass in different context b/c anonymous class
+//                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+//                Article article = articles.get(position);
+//                i.putExtra("article",article);
+//                startActivity(i);
+//            }
+//        });
+        gvResults.setLayoutManager(new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL));
     }
 
     public void onArticleSearch(View view) {
@@ -89,7 +93,8 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     // Every time data is changed, notify adapter; can also do by article.addAll and use adapter.notifyDataSetChanged
-                    adapter.addAll(Article.fromJsonArray(articleJsonResults));
+                    articles.addAll(Article.fromJsonArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
                     Log.d("DEBUG",articles.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
