@@ -5,28 +5,21 @@
     android:orientation="vertical"
     android:background="@android:color/background_light"
     android:weightSum="1">
-    <LinearLayout
-        android:layout_width="311dp"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="272dp"
+        android:layout_height="327dp"
         android:orientation="vertical"
         android:layout_margin="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_weight="0.45">
-        >
-        <LinearLayout
+        android:background="@color/switch_thumb_normal_material_light">
+
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="20dp">
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="It's a PopupWindow" />
-            <Button
-                android:id="@+id/dismiss"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Dismiss" />
-        </LinearLayout>
-    </LinearLayout>
+            android:text="Filter"
+            android:id="@+id/tvFilterText"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp" />
+    </RelativeLayout>
 </LinearLayout>

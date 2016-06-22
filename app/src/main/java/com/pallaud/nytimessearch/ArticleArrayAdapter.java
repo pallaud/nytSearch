@@ -52,15 +52,6 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
             view.getContext().startActivity(i);
         }
 
-//        @Override
-//        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//            // Calculate the image ratio of the loaded bitmap
-//            float ratio = (float) bitmap.getHeight() / (float) bitmap.getWidth();
-//            // Set the ratio for the image
-//            ivImage.setHeightRatio(ratio);
-//            // Load the image into the view
-//            ivImage.setImageBitmap(bitmap);
-//        }
     }
 
     // Usually involves inflating a layout from XML and returning the holder
