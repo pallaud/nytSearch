@@ -1,14 +1,26 @@
 package com.pallaud.nytimessearch;
 
+import org.parceler.Parcel;
+
 import java.util.ArrayList;
 
 /**
  * Created by pallaud on 6/23/16.
  */
+@Parcel
 public class SearchFilter {
+    String query;
     String sort;
     String begin_date;
     ArrayList<String> newsDeskOpts;
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
 
     public String getSort() {
         return sort;
@@ -34,9 +46,13 @@ public class SearchFilter {
         this.newsDeskOpts = newsDeskOpts;
     }
 
-    public SearchFilter(String sort, String begin_date, ArrayList<String> newsDeskOpts) {
+    public SearchFilter() {
+    }
+
+    public SearchFilter(String query, String sort, String begin_date, ArrayList<String> newsDeskOpts) {
         this.sort = sort;
         this.begin_date = begin_date;
         this.newsDeskOpts = newsDeskOpts;
+        this.query = query;
     }
 }

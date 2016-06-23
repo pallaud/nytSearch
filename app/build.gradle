@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt' //Butterknife
+apply plugin: 'com.neenbedankt.android-apt' //Parcelable
 
 android {
     compileSdkVersion 23
@@ -32,5 +33,12 @@ dependencies {
     //butterknife
     compile 'com.jakewharton:butterknife:8.1.0'
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
+    //parcelable
+    compile 'org.parceler:parceler-api:1.1.1'
+    apt 'org.parceler:parceler:1.1.1'
+    //toolbar scroll change
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:design:23.1.0'
 
 }

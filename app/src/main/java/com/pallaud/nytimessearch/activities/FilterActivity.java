@@ -15,6 +15,8 @@ import com.pallaud.nytimessearch.R;
 import com.pallaud.nytimessearch.SearchFilter;
 import com.pallaud.nytimessearch.extra.DatePickerFragment;
 
+import org.parceler.Parcels;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ import butterknife.ButterKnife;
 
 public class FilterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-
     @BindView(R.id.etDatePicker) EditText etDatePicker;
     @BindView(R.id.mySpinner) Spinner mySpinner;
     SearchFilter filter;
@@ -35,7 +36,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-        filter = new SearchFilter(null,null,new ArrayList<String>());
+        filter = new SearchFilter(null,null,null,new ArrayList<String>());
         ButterKnife.bind(this);
     }
 
@@ -54,7 +55,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, monthOfYear);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        etDatePicker.setText(monthOfYear + "/" + (dayOfMonth+1) + "/" + year);
+        etDatePicker.setText(monthOfYear + "/" + dayOfMonth + "/" + year);
 
         SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
         Date newDate = null;
@@ -67,7 +68,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         String date = format.format(newDate);
         Log.d("DATE","date:" + date);
         Log.d("DATE","newDate:" + newDate);
-        filter.setBegin_date(date);
+        filter.setBegin_date((date+1));
     }
 
     public void getSpinner () {
@@ -95,10 +96,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         getSpinner();
 
         Intent data = new Intent();
-        // Pass relevant data back as a result
-        data.putExtra("sort", filter.getSort());
-        data.putExtra("begin_date", filter.getBegin_date());
-        data.putExtra("newsDesk", filter.getNewsDeskOpts());
+        data.putExtra("searchFilter", Parcels.wrap(filter));
 
         setResult(RESULT_OK, data);
         finish();

@@ -20,11 +20,13 @@ import com.loopj.android.http.RequestParams;
 import com.pallaud.nytimessearch.Article;
 import com.pallaud.nytimessearch.ArticleArrayAdapter;
 import com.pallaud.nytimessearch.R;
+import com.pallaud.nytimessearch.SearchFilter;
 import com.pallaud.nytimessearch.extra.EndlessRecyclerViewScrollListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -35,9 +37,7 @@ import cz.msebera.android.httpclient.Header;
 public class SearchActivity extends AppCompatActivity {
 
     String query;
-    String sort;
-    String begin_date;
-    ArrayList<String> newsDesk;
+    SearchFilter filter;
     @BindView(R.id.gvResults) RecyclerView gvResults;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
@@ -53,14 +53,14 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setUpViews();
-        fetchArticles(query,0,true,sort,begin_date,newsDesk);
+        fetchArticles(0,true);
     }
 
     public void setUpViews() {
         articles = new ArrayList<Article>();
         adapter = new ArticleArrayAdapter(this,articles);
         gvResults.setAdapter(adapter);
-        newsDesk = new ArrayList<>();
+        filter = new SearchFilter(null,null,null,new ArrayList<String>());
         setUpRecycler();
     }
 
@@ -70,17 +70,15 @@ public class SearchActivity extends AppCompatActivity {
         gvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                fetchArticles(query,page,false,sort,begin_date,newsDesk);
+                fetchArticles(page,false);
             }
         });
     }
 
-    public void fetchArticles(String query, int page, boolean newSearch,
-                              String sort, String begin_date, ArrayList<String> newsDesk) {
+    public void fetchArticles(int page, boolean newSearch) {
         if(newSearch) {
             articles.clear();
         }
-        this.query = query;
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url;
@@ -92,16 +90,16 @@ public class SearchActivity extends AppCompatActivity {
             url = "https://api.nytimes.com/svc/topstories/v2/home.json";
         } else {
             url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
-            params.put("q",query);
-            if(sort != null) {
-                params.put("sort",sort);
+            params.put("q",filter.getQuery());
+            if(filter.getSort() != null) {
+                params.put("sort",filter.getSort());
             }
-            if(begin_date != null) {
-                params.put("begin_date",begin_date);
+            if(filter.getBegin_date() != null) {
+                params.put("begin_date",filter.getBegin_date());
             }
-            if(newsDesk.size() > 0) {
-                for(int i=0; i<newsDesk.size(); i++) {
-                    params.put("news_desk",newsDesk.get(i));
+            if(filter.getNewsDeskOpts().size() > 0) {
+                for(int i=0; i<filter.getNewsDeskOpts().size(); i++) {
+                    params.put("news_desk",filter.getNewsDeskOpts().get(i));
                 }
             }
         }
@@ -138,11 +136,11 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            sort = data.getExtras().getString("sort");
-            begin_date = data.getExtras().getString("begin_date");
-            newsDesk = data.getExtras().getStringArrayList("newsDesk");
-            fetchArticles(query,0,true,sort,begin_date,newsDesk);
-
+            SearchFilter newFilter = (SearchFilter) Parcels.unwrap(data.getParcelableExtra("searchFilter"));
+            filter.setSort(newFilter.getSort());
+            filter.setBegin_date(newFilter.getBegin_date());
+            filter.setNewsDeskOpts(newFilter.getNewsDeskOpts());
+            fetchArticles(0,true);
         }
     }
 
@@ -157,10 +155,11 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 topStories = false;
+                filter.setQuery(query);
                 gvResults.clearOnScrollListeners();
                 setUpRecycler();
                 findViewById(R.id.tvHeading).setVisibility(View.GONE);
-                fetchArticles(query,0,true,sort,begin_date,newsDesk);
+                fetchArticles(0,true);
                 searchView.clearFocus();
                 return true;
             }

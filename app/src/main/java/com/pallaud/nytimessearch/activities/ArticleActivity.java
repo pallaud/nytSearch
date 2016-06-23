@@ -27,9 +27,10 @@ public class ArticleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
-        setSupportActionBar(toolbar);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        toolbar.setTitle("New York Times");
         Article article = (Article) getIntent().getSerializableExtra("article");
         // How to have article embedded in app instead of opening in new browser
         wvArticle.setWebViewClient(new WebViewClient() {

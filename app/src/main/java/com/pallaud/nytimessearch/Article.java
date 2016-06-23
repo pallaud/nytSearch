@@ -53,7 +53,7 @@ public class Article implements Serializable {
                 JSONArray multimedia = jsonObject.getJSONArray("multimedia");
                 if (multimedia.length() > 0) {
                     JSONObject multimediaJson = multimedia.getJSONObject(0);
-                    thumbnail = "http://www.nytimes.com/" + multimediaJson.getString("url");
+                    thumbnail = multimediaJson.getString("url");
                 } else {
                     thumbnail = "";
                 }
