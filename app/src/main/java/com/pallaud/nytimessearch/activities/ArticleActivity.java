@@ -15,19 +15,22 @@ import android.webkit.WebViewClient;
 import com.pallaud.nytimessearch.Article;
 import com.pallaud.nytimessearch.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ArticleActivity extends AppCompatActivity {
 
-    WebView wvArticle;
+    @BindView(R.id.wvArticle) WebView wvArticle;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
 
         Article article = (Article) getIntent().getSerializableExtra("article");
-        wvArticle = (WebView) findViewById(R.id.wvArticle);
         // How to have article embedded in app instead of opening in new browser
         wvArticle.setWebViewClient(new WebViewClient() {
             @Override

@@ -15,6 +15,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 //import com.pallaud.nytimessearch.extra.ImageView;
 
 /**
@@ -25,20 +28,17 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
     private List<Article> articlesList;
 
     public ArticleArrayAdapter(Context context, List<Article> articles) {
-//        super(context, android.R.layout.simple_list_item_1, articles);
         articlesList = articles;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView tvTitle;
-        public ImageView ivImage;
+        @BindView(R.id.tvTitle) TextView tvTitle;
+        @BindView(R.id.ivImage) ImageView ivImage;
 
         public ViewHolder(View itemView) {
-
             super(itemView);
-            tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
-            ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            ButterKnife.bind(this, itemView);
             itemView.setOnClickListener(this);
         }
 
@@ -82,7 +82,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         ivImage.setImageResource(0);
         String thumbnail = article.getThumbnail();
         if(!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(ivImage.getContext()).load(thumbnail).into(ivImage);
+            Picasso.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.ic_nyt_logo).into(ivImage);
         }
     }
 

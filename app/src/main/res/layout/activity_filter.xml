@@ -50,45 +50,33 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="49dp" />
 
-    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    <Spinner
+        android:id="@+id/mySpinner"
+        android:layout_width="wrap_content"
+        android:entries="@array/sort_by"
+        android:prompt="@string/newest"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_alignTop="@+id/tvSortBy"
         android:layout_alignLeft="@+id/etDatePicker"
-        android:layout_alignStart="@+id/etDatePicker"
-        android:id="@+id/radioGroup">
-        <RadioButton android:id="@+id/rbOldest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Oldest"
-            android:onClick="onRadioButtonClicked"/>
-        <RadioButton android:id="@+id/rbNewest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Newest"
-            android:onClick="onRadioButtonClicked"/>
-    </RadioGroup>
+        android:layout_alignStart="@+id/etDatePicker" />
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="News Desk"
         android:id="@+id/tvNewsDesk"
-        android:layout_below="@+id/radioGroup"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="67dp" />
+        android:layout_centerVertical="true"
+        android:layout_alignRight="@+id/tvBeginDate"
+        android:layout_alignEnd="@+id/tvBeginDate" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/tvNewsDesk"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignLeft="@+id/radioGroup"
-        android:layout_alignStart="@+id/radioGroup">
+        android:layout_alignLeft="@+id/etDatePicker"
+        android:layout_alignStart="@+id/etDatePicker">
         <CheckBox android:id="@+id/cbPolitics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

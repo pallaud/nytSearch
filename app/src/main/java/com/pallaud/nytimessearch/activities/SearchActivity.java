@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -27,6 +28,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
@@ -35,46 +38,45 @@ public class SearchActivity extends AppCompatActivity {
     String sort;
     String begin_date;
     ArrayList<String> newsDesk;
-    RecyclerView gvResults;
+    @BindView(R.id.gvResults) RecyclerView gvResults;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
     final int REQUEST_CODE = 20;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    boolean topStories = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setUpViews();
-        showTopStories();
+        fetchArticles(query,0,true,sort,begin_date,newsDesk);
     }
 
     public void setUpViews() {
-        gvResults = (RecyclerView) findViewById(R.id.gvResults);
         articles = new ArrayList<Article>();
         adapter = new ArticleArrayAdapter(this,articles);
         gvResults.setAdapter(adapter);
         newsDesk = new ArrayList<>();
+        setUpRecycler();
+    }
 
+    public void setUpRecycler() {
         StaggeredGridLayoutManager gridManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
-        gridManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
         gvResults.setLayoutManager(gridManager);
         gvResults.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                onArticleSearch(query,page,false,false,sort,begin_date,newsDesk);
+                fetchArticles(query,page,false,sort,begin_date,newsDesk);
             }
         });
     }
 
-    public void showTopStories() {
-        onArticleSearch(null,0,true,true,null,null,null);
-    }
-
-    public void onArticleSearch(String query, int page, boolean newSearch, final boolean topStories,
-                                String sort, String begin_date, ArrayList<String> newsDesk) {
+    public void fetchArticles(String query, int page, boolean newSearch,
+                              String sort, String begin_date, ArrayList<String> newsDesk) {
         if(newSearch) {
             articles.clear();
         }
@@ -86,7 +88,9 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "ed5753fe0329424883b2a07a7a7b4817");
         params.put("page", page);
 
-        if(!topStories) {
+        if(topStories) {
+            url = "https://api.nytimes.com/svc/topstories/v2/home.json";
+        } else {
             url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
             params.put("q",query);
             if(sort != null) {
@@ -100,9 +104,6 @@ public class SearchActivity extends AppCompatActivity {
                     params.put("news_desk",newsDesk.get(i));
                 }
             }
-
-        } else {
-            url = "https://api.nytimes.com/svc/topstories/v2/home.json";
         }
 
         client.get(url, params, new JsonHttpResponseHandler() {
@@ -118,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
                     }
 
                     // Every time data is changed, notify adapter; can also do by article.addAll and use adapter.notifyDataSetChanged
-                    articles.addAll(Article.fromJsonArray(articleJsonResults));
+                    articles.addAll(Article.fromJsonArray(articleJsonResults, topStories));
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -133,13 +134,15 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
             sort = data.getExtras().getString("sort");
             begin_date = data.getExtras().getString("begin_date");
             newsDesk = data.getExtras().getStringArrayList("newsDesk");
-            onArticleSearch(query,0,true,false,sort,begin_date,newsDesk);
+            fetchArticles(query,0,true,sort,begin_date,newsDesk);
+
         }
     }
 
@@ -153,7 +156,11 @@ public class SearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                onArticleSearch(query,0,true,false,sort,begin_date,newsDesk);
+                topStories = false;
+                gvResults.clearOnScrollListeners();
+                setUpRecycler();
+                findViewById(R.id.tvHeading).setVisibility(View.GONE);
+                fetchArticles(query,0,true,sort,begin_date,newsDesk);
                 searchView.clearFocus();
                 return true;
             }
@@ -173,6 +180,7 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_filter) {
+            findViewById(R.id.tvHeading).setVisibility(View.GONE);
             Intent i = new Intent(this,FilterActivity.class);
             startActivityForResult(i, REQUEST_CODE);
         }

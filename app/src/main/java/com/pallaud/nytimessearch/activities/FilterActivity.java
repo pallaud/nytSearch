@@ -9,27 +9,34 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
+import android.widget.Spinner;
 
 import com.pallaud.nytimessearch.R;
+import com.pallaud.nytimessearch.SearchFilter;
 import com.pallaud.nytimessearch.extra.DatePickerFragment;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class FilterActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    String sort;
-    String begin_date;
-    ArrayList<String> newsDeskOpts;
-    EditText etDatePicker;
+
+    @BindView(R.id.etDatePicker) EditText etDatePicker;
+    @BindView(R.id.mySpinner) Spinner mySpinner;
+    SearchFilter filter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-        etDatePicker = (EditText) findViewById(R.id.etDatePicker);
-        newsDeskOpts = new ArrayList<String>();
+        filter = new SearchFilter(null,null,new ArrayList<String>());
+        ButterKnife.bind(this);
     }
 
     // attach to an onclick handler to show the date picker
@@ -47,29 +54,25 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, monthOfYear);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        etDatePicker.setText(monthOfYear + "/" + dayOfMonth + "/" + year);
+        etDatePicker.setText(monthOfYear + "/" + (dayOfMonth+1) + "/" + year);
 
-//        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss Z");
-//        Date newDate = format.parse(""+year+monthOfYear+dayOfMonth);
-//
-//        format = new SimpleDateFormat("MMM dd,yyyy hh:mm a");
-//        String date = format.format(newDate);
-//        begin_date = ;
+        SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
+        Date newDate = null;
+        try {
+            newDate = format.parse(etDatePicker.getText().toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        format = new SimpleDateFormat("yyyymmdd");
+        String date = format.format(newDate);
+        Log.d("DATE","date:" + date);
+        Log.d("DATE","newDate:" + newDate);
+        filter.setBegin_date(date);
     }
 
-    public void onRadioButtonClicked(View view) {
-        // Is the button now checked?
-        boolean checked = ((RadioButton) view).isChecked();
-        // Check which radio button was clicked
-        switch(view.getId()) {
-            case R.id.rbOldest:
-                if (checked)
-                    sort = "oldest";
-                    break;
-            case R.id.rbNewest:
-                if (checked)
-                    sort = "newest";
-                    break;
+    public void getSpinner () {
+        if(!mySpinner.getSelectedItem().toString().equals("None")) {
+            filter.setSort(mySpinner.getSelectedItem().toString());
         }
     }
 
@@ -78,19 +81,24 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         boolean checked = ((CheckBox) view).isChecked();
         CheckBox cb = (CheckBox) findViewById(view.getId());
         if(checked) {
+            ArrayList<String> newsDeskOpts = filter.getNewsDeskOpts();
             newsDeskOpts.add(cb.getText().toString());
+            filter.setNewsDeskOpts(newsDeskOpts);
         } else {
-            newsDeskOpts.remove(cb.getText());
+            ArrayList<String> newsDeskOpts = filter.getNewsDeskOpts();
+            newsDeskOpts.remove(cb.getText().toString());
+            filter.setNewsDeskOpts(newsDeskOpts);
         }
     }
 
     public void onSubmit(View v) {
+        getSpinner();
 
         Intent data = new Intent();
         // Pass relevant data back as a result
-        data.putExtra("sort", sort);
-        data.putExtra("begin_date", begin_date);
-        data.putExtra("newsDesk", newsDeskOpts);
+        data.putExtra("sort", filter.getSort());
+        data.putExtra("begin_date", filter.getBegin_date());
+        data.putExtra("newsDesk", filter.getNewsDeskOpts());
 
         setResult(RESULT_OK, data);
         finish();
