@@ -44,7 +44,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+I had not been introduced to fragments before this, so having the filter options show up in a dialog was a fun learning challenge. The biggest difficuly when creating this app was having the code get more complicated as I added new features, and then having to go back and reorganize and restructure it to integrate the new features.
 
 ## Open-source libraries used
 
