@@ -150,6 +150,7 @@ public class SearchActivity extends AppCompatActivity implements SearchFilterDia
                 filter.setQuery(query);
                 gvResults.clearOnScrollListeners();
                 setUpRecycler();
+                findViewById(R.id.relativeLayout).setVisibility(View.GONE);
                 findViewById(R.id.tvHeading).setVisibility(View.GONE);
                 fetchArticles(0,true);
                 searchView.clearFocus();
@@ -184,7 +185,7 @@ public class SearchActivity extends AppCompatActivity implements SearchFilterDia
         filterDialogFragment.show(fm, "fragment_filter");
     }
 
-    // Updates filter options when dialog is closed
+    // Updates filter options wdivbhthlvdnkjjditdtkujljlkdjbhffhen dialog is closed
     public void onUpdateFilters(SearchFilter newFilter) {
         filter.setSort(newFilter.getSort());
         filter.setBegin_date(newFilter.getBegin_date());
