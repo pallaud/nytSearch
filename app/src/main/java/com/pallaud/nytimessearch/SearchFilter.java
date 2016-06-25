@@ -2,13 +2,14 @@ package com.pallaud.nytimessearch;
 
 import org.parceler.Parcel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by pallaud on 6/23/16.
  */
 @Parcel
-public class SearchFilter {
+public class SearchFilter implements Serializable {
     String query;
     String sort;
     String begin_date;

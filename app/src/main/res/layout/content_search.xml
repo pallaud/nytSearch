@@ -17,8 +17,10 @@
         android:layout_below="@+id/tvHeading"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginTop="5dp" />
 
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,7 +29,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:textSize="20sp"
-        android:textColor="#000000" />
+        android:textColor="@color/colorAccent"
+        android:layout_margin="10dp" />
 
 
 </RelativeLayout>

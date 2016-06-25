@@ -1,6 +1,5 @@
 package com.pallaud.nytimessearch.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,11 +21,11 @@ import com.pallaud.nytimessearch.ArticleArrayAdapter;
 import com.pallaud.nytimessearch.R;
 import com.pallaud.nytimessearch.SearchFilter;
 import com.pallaud.nytimessearch.extra.EndlessRecyclerViewScrollListener;
+import com.pallaud.nytimessearch.extra.SearchFilterDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -34,7 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements SearchFilterDialogFragment.OnFilterSearchListener {
 
     String query;
     SearchFilter filter;
@@ -56,6 +55,7 @@ public class SearchActivity extends AppCompatActivity {
         fetchArticles(0,true);
     }
 
+    // Initializing variables
     public void setUpViews() {
         articles = new ArrayList<Article>();
         adapter = new ArticleArrayAdapter(this,articles);
@@ -64,6 +64,7 @@ public class SearchActivity extends AppCompatActivity {
         setUpRecycler();
     }
 
+    // Sets up recycler view with staggered grid, sets up scroll listener to enable endless scrolling.
     public void setUpRecycler() {
         StaggeredGridLayoutManager gridManager = new StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL);
         gvResults.setLayoutManager(gridManager);
@@ -75,10 +76,10 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    // Sets up http client, makes network request, updates data. Changes request based on whether or not app is
+    // displaying top stories.
     public void fetchArticles(int page, boolean newSearch) {
-        if(newSearch) {
-            articles.clear();
-        }
+        if(newSearch) { articles.clear(); }
 
         AsyncHttpClient client = new AsyncHttpClient();
         String url;
@@ -86,6 +87,7 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "ed5753fe0329424883b2a07a7a7b4817");
         params.put("page", page);
 
+        // If top stories, different parameters
         if(topStories) {
             url = "https://api.nytimes.com/svc/topstories/v2/home.json";
         } else {
@@ -99,9 +101,10 @@ public class SearchActivity extends AppCompatActivity {
             }
             if(filter.getNewsDeskOpts().size() > 0) {
                 for(int i=0; i<filter.getNewsDeskOpts().size(); i++) {
-                    params.put("news_desk",filter.getNewsDeskOpts().get(i));
+                    params.put("fq",String.format("news_desk:(%s)",filter.getNewsDeskOpts().get(i)));
                 }
             }
+            Log.d("DEBUG",params.toString());
         }
 
         client.get(url, params, new JsonHttpResponseHandler() {
@@ -132,26 +135,15 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            SearchFilter newFilter = (SearchFilter) Parcels.unwrap(data.getParcelableExtra("searchFilter"));
-            filter.setSort(newFilter.getSort());
-            filter.setBegin_date(newFilter.getBegin_date());
-            filter.setNewsDeskOpts(newFilter.getNewsDeskOpts());
-            fetchArticles(0,true);
-        }
-    }
-
+    // Sets up search icon for menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // When a search is made, calls fetchArticles to make new request
             @Override
             public boolean onQueryTextSubmit(String query) {
                 topStories = false;
@@ -179,13 +171,29 @@ public class SearchActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if(id == R.id.action_filter) {
-            findViewById(R.id.tvHeading).setVisibility(View.GONE);
-            Intent i = new Intent(this,FilterActivity.class);
-            startActivityForResult(i, REQUEST_CODE);
+            showFilterDialog();
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    // Sets up dialog fragment that shows filter options
+    private void showFilterDialog() {
+        android.app.FragmentManager fm = getFragmentManager();
+        SearchFilterDialogFragment filterDialogFragment = SearchFilterDialogFragment.newInstance(filter);
+        filterDialogFragment.show(fm, "fragment_filter");
+    }
+
+    // Updates filter options when dialog is closed
+    public void onUpdateFilters(SearchFilter newFilter) {
+        filter.setSort(newFilter.getSort());
+        filter.setBegin_date(newFilter.getBegin_date());
+        filter.setNewsDeskOpts(newFilter.getNewsDeskOpts());
+        gvResults.clearOnScrollListeners();
+        setUpRecycler();
+        fetchArticles(0,true);
+    }
+
 
 
 }

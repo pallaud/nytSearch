@@ -1,3 +1,5 @@
+// Activity version of filters. Dialog fragment version implemented in final version.
+
 package com.pallaud.nytimessearch.activities;
 
 import android.app.DatePickerDialog;
@@ -36,8 +38,8 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
-        filter = new SearchFilter(null,null,null,new ArrayList<String>());
         ButterKnife.bind(this);
+        filter = new SearchFilter(null,null,null,new ArrayList<String>());
     }
 
     // attach to an onclick handler to show the date picker
@@ -55,7 +57,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, monthOfYear);
         c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        etDatePicker.setText(monthOfYear + "/" + dayOfMonth + "/" + year);
+        etDatePicker.setText((monthOfYear+1) + "/" + dayOfMonth + "/" + year);
 
         SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
         Date newDate = null;
@@ -66,9 +68,7 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
         }
         format = new SimpleDateFormat("yyyymmdd");
         String date = format.format(newDate);
-        Log.d("DATE","date:" + date);
-        Log.d("DATE","newDate:" + newDate);
-        filter.setBegin_date((date+1));
+        filter.setBegin_date((date));
     }
 
     public void getSpinner () {
@@ -78,16 +78,15 @@ public class FilterActivity extends AppCompatActivity implements DatePickerDialo
     }
 
     public void onCheckboxClicked(View view) {
-        // if checkbox is checked, adds the string from that checkbox to list, otherwise if unchecked, removes it
         boolean checked = ((CheckBox) view).isChecked();
         CheckBox cb = (CheckBox) findViewById(view.getId());
         if(checked) {
             ArrayList<String> newsDeskOpts = filter.getNewsDeskOpts();
-            newsDeskOpts.add(cb.getText().toString());
+            newsDeskOpts.add("\"" + cb.getText().toString() + "\"");
             filter.setNewsDeskOpts(newsDeskOpts);
         } else {
             ArrayList<String> newsDeskOpts = filter.getNewsDeskOpts();
-            newsDeskOpts.remove(cb.getText().toString());
+            newsDeskOpts.remove("\"" + cb.getText().toString() + "\"");
             filter.setNewsDeskOpts(newsDeskOpts);
         }
     }

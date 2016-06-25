@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.pallaud.nytimessearch.activities.ArticleActivity;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -82,7 +82,9 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
         ivImage.setImageResource(0);
         String thumbnail = article.getThumbnail();
         if(!TextUtils.isEmpty(thumbnail)) {
-            Picasso.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.ic_nyt_logo).into(ivImage);
+            Glide.with(ivImage.getContext()).load(thumbnail).placeholder(R.drawable.nyt_logo).into(ivImage);
+        } else {
+            Glide.with(ivImage.getContext()).load(R.drawable.nyt_logo).placeholder(R.drawable.nyt_logo).into(ivImage);
         }
     }
 
@@ -91,33 +93,5 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<ArticleArrayAdapte
     public int getItemCount() {
         return articlesList.size();
     }
-
-
-//    @Override
-//    public View getView(int position, View convertView, ViewGroup parent) {
-//        // Get the data item for this position
-//        Article article = getItem(position);
-//        // Check if an existing view is being reused, otherwise inflate the view
-//        if (convertView == null) {
-//            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_article_result, parent, false);
-//        }
-//        // Lookup view for data population
-//        ImageView ivImage = (ImageView) convertView.findViewById(R.id.ivImage);
-//        TextView tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-//
-//        // Populate the data into the template view using the data object
-//        tvTitle.setText(article.getHeadline());
-//
-//        // Clear out recycled image from last convertView
-//        ivImage.setImageResource(0);
-//        // Populate thumbnail image, remote download image in bckground (if thumbnail exists)
-//        String thumbnail = article.getThumbnail();
-//        if(!TextUtils.isEmpty(thumbnail)) {
-//            Picasso.with(getContext()).load(thumbnail).into(ivImage);
-//        }
-//
-//        // Return the completed view to render on screen
-//        return convertView;
-//    }
 
 }
